@@ -1,17 +1,19 @@
 pipeline {
     agent any
 
-    environment {
-        BACKEND_IMAGE = 'pranavvengatesh191103/mern-backend'
-        FRONTEND_IMAGE = 'pranavvengatesh191103/mern-frontend'
-    }
-
     stages {
+
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/pranavvengatesh/mern-crud.git'
+            }
+        }
 
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    sh 'docker build -t $BACKEND_IMAGE:latest .'
+                    bat 'docker build -t pranavvengatesh191103/mern-backend:latest .'
                 }
             }
         }
@@ -19,7 +21,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'docker build -t $FRONTEND_IMAGE:latest .'
+                    bat 'docker build -t pranavvengatesh191103/mern-frontend:latest .'
                 }
             }
         }
@@ -31,16 +33,16 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
                 }
             }
         }
 
         stage('Push Images') {
             steps {
-                sh '''
-                docker push $BACKEND_IMAGE:latest
-                docker push $FRONTEND_IMAGE:latest
+                bat '''
+                docker push pranavvengatesh191103/mern-backend:latest
+                docker push pranavvengatesh191103/mern-frontend:latest
                 '''
             }
         }
