@@ -49,7 +49,7 @@ pipeline {
 stage('Deploy to EC2') {
     steps {
         bat '''
-ssh -i C:\\jenkins\\jenkinsdocker-key.pem -o StrictHostKeyChecking=no ubuntu@13.234.239.182 "docker pull pranavvengatesh191103/mern-backend:latest && docker stop backend || true && docker rm backend || true && docker run -d -p 5000:5000 --name backend pranavvengatesh191103/mern-backend:latest"
+ssh -i C:\\Program Files\\Jenkins\\jenkinsdocker-key.pem -o StrictHostKeyChecking=no ubuntu@13.234.239.182 "docker pull pranavvengatesh191103/mern-backend:latest && docker stop backend || true && docker rm backend || true && docker run -d -p 5000:5000 --name backend pranavvengatesh191103/mern-backend:latest"
 '''
     }
 }
