@@ -56,9 +56,6 @@ ssh -o StrictHostKeyChecking=no ubuntu@13.234.239.182 "docker pull pranavvengate
     }
 }
 
-}
-
-
 
     }
 }
