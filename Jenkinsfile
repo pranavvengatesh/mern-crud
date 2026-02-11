@@ -49,15 +49,13 @@ pipeline {
 stage('Deploy to EC2') {
     steps {
         sshagent(['ec2-key']) {
-            bat """
-            ssh -o StrictHostKeyChecking=no ubuntu@13.234.239.182 ^
-            docker pull pranavvengatesh191103/mern-backend:latest ^&^& ^
-            docker stop backend ^|^| exit 0 ^&^& ^
-            docker rm backend ^|^| exit 0 ^&^& ^
-            docker run -d -p 5000:5000 --name backend pranavvengatesh191103/mern-backend:latest
-            """
+            bat '''
+ssh -o StrictHostKeyChecking=no ubuntu@13.234.239.182 "docker pull pranavvengatesh191103/mern-backend:latest && docker stop backend || true && docker rm backend || true && docker run -d -p 5000:5000 --name backend pranavvengatesh191103/mern-backend:latest"
+'''
         }
     }
+}
+
 }
 
 
