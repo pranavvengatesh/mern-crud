@@ -1,38 +1,53 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE_BACKEND = "username/backend"
+        DOCKER_IMAGE_FRONTEND = "username/frontend"
+    }
+
     stages {
 
         stage('Clone') {
             steps {
-                git 'https://github.com/yourrepo.git'
+                git url: 'https://github.com/yourrepo.git'
             }
         }
 
         stage('Build Images') {
             steps {
-                sh 'docker build -t username/backend ./backend'
-                sh 'docker build -t username/frontend ./frontend'
+                sh 'docker build -t $DOCKER_IMAGE_BACKEND ./backend'
+                sh 'docker build -t $DOCKER_IMAGE_FRONTEND ./frontend'
             }
         }
 
         stage('Push Images') {
             steps {
-                sh 'docker login -u DOCKERUSER -p DOCKERPASSWORD'
-                sh 'docker push username/backend'
-                sh 'docker push username/frontend'
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $DOCKER_IMAGE_BACKEND
+                        docker push $DOCKER_IMAGE_FRONTEND
+                    '''
+                }
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                sh '''
-                ssh ubuntu@PRODUCTION-IP "
-                cd /home/ubuntu/app &&
-                docker compose pull &&
-                docker compose up -d
-                "
-                '''
+                sshagent(['prod-ssh']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@PRIVATE-IP "
+                        cd /home/ubuntu/app &&
+                        docker compose pull &&
+                        docker compose up -d
+                        "
+                    '''
+                }
             }
         }
     }
