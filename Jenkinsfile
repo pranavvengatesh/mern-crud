@@ -10,7 +10,8 @@ pipeline {
 
         stage('Clone') {
             steps {
-             git url: 'https://github.com/pranavvengatesh/mern-crud.git', branch: 'main'
+             git url: 'https://github.com/pranavvengatesh/mern-crud.git',
+              branch: 'main'
             }
         }
 
